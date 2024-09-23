@@ -1,6 +1,6 @@
 let userform = document.getElementById('user-form'); 
 
-const retrieveEnteries = () => {
+const retrieveEntries = () => {
     let entries = localStorage.getItem("user-entries");
     if (entries) {
         entries = JSON.parse(entries);
@@ -10,10 +10,31 @@ const retrieveEnteries = () => {
     return entries;
 }
 
-let userEntries = retrieveEnteries();
+let userEntries = retrieveEntries();
 
+// Function to calculate the user's age based on their date of birth
+const calculateAge = (dob) => {
+    const dobDate = new Date(dob);
+    const today = new Date();
+    const age = today.getFullYear() - dobDate.getFullYear();
+    const monthDifference = today.getMonth() - dobDate.getMonth();
+
+    // Adjust age if the birthday hasn't happened yet this year
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dobDate.getDate())) {
+        return age - 1;
+    }
+    return age;
+}
+
+// Function to validate email format
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Function to display all the user entries in the table
 const displayEntries = () => {
-    let entries = retrieveEnteries();  
+    let entries = retrieveEntries();  
     const tableEntries = entries.map((entry) => {
         const nameCell = `<td class='border px-4 py-2 text-white'>${entry.name}</td>`;  
         const emailCell = `<td class='border px-4 py-2 text-white'>${entry.email}</td>`;
@@ -50,24 +71,17 @@ const saveUserForm = (event) => {
     const dob = document.getElementById('dob').value;
     const acceptedTerms = document.getElementById('terms').checked;
 
-    const age = calculateAge(dob);
+    // Validate email format
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
 
-    // Age validation between 18 and 55
+    // Validate age between 18 and 55
+    const age = calculateAge(dob);
     if (age < 18 || age > 55) {
         alert("Age must be between 18 and 55 years old.");
         return;
-    }
-    const calculateAge = (dob) => {
-        const dobDate = new Date(dob);
-        const today = new Date();
-        const age = today.getFullYear() - dobDate.getFullYear();
-        const monthDifference = today.getMonth() - dobDate.getMonth();
-    
-        // Adjust age if the birthday hasn't happened yet this year
-        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dobDate.getDate())) {
-            return age - 1;
-        }
-        return age;
     }
 
     const entry = {
@@ -79,8 +93,8 @@ const saveUserForm = (event) => {
     };
 
     userEntries.push(entry);
-    localStorage.setItem("user-entries", JSON.stringify(userEntries));
-    displayEntries();
+    localStorage.setItem("user-entries", JSON.stringify(userEntries));  // Store updated entries in localStorage
+    displayEntries();  // Update the table with the new entry
     userform.reset();  // Reset the form after submission
 }
 

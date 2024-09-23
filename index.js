@@ -50,6 +50,26 @@ const saveUserForm = (event) => {
     const dob = document.getElementById('dob').value;
     const acceptedTerms = document.getElementById('terms').checked;
 
+    const age = calculateAge(dob);
+
+    // Age validation between 18 and 55
+    if (age < 18 || age > 55) {
+        alert("Age must be between 18 and 55 years old.");
+        return;
+    }
+    const calculateAge = (dob) => {
+        const dobDate = new Date(dob);
+        const today = new Date();
+        const age = today.getFullYear() - dobDate.getFullYear();
+        const monthDifference = today.getMonth() - dobDate.getMonth();
+    
+        // Adjust age if the birthday hasn't happened yet this year
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dobDate.getDate())) {
+            return age - 1;
+        }
+        return age;
+    }
+
     const entry = {
         name,   
         email,
